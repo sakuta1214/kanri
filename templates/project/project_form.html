@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>{{ title }}</h2>
+
+    <form method="POST">
+        {{ form.csrf_token }} {# CSRFトークンは必須 #}
+        {# 隠しフィールドのproject_idを埋め込む #}
+        {{ form.project_id }}
+
+        <div class="form-group">
+            {{ form.name.label }}
+            {{ form.name(class="form-control") }}
+            {% if form.name.errors %}
+                <div class="alert alert-danger mt-1">
+                    {% for error in form.name.errors %}
+                        <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            {{ form.description.label }}
+            {{ form.description(class="form-control", rows="5") }}
+            {% if form.description.errors %}
+                <div class="alert alert-danger mt-1">
+                    {% for error in form.description.errors %}
+                        <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            {{ form.start_date.label }}
+            {{ form.start_date(class="form-control") }}
+            {% if form.start_date.errors %}
+                <div class="alert alert-danger mt-1">
+                    {% for error in form.start_date.errors %}
+                        <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            {{ form.end_date.label }}
+            {{ form.end_date(class="form-control") }}
+            {% if form.end_date.errors %}
+                <div class="alert alert-danger mt-1">
+                    {% for error in form.end_date.errors %}
+                        <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            {{ form.status.label }}
+            {{ form.status(class="form-control") }}
+            {% if form.status.errors %}
+                <div class="alert alert-danger mt-1">
+                    {% for error in form.status.errors %}
+                        <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        {{ form.submit(class="btn btn-primary") }}
+        <a href="{{ url_for('project.project_list') }}" class="btn btn-default ms-2">キャンセル</a>
+    </form>
+</div>
+{% endblock %}

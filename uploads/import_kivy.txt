@@ -1,0 +1,96 @@
+import kivy
+from kivy.app import App
+from kivy.uix.button import Button
+from kivy.uix.label import Label
+from kivy.uix.boxlayout import BoxLayout
+import random
+import time  # timeモジュールをインポート
+
+kivy.require('1.0.9')  # Ensure Kivy version is compatible
+
+class RandomNumberApp(App):
+    def build(self):
+        layout = BoxLayout(orientation='vertical', padding=10, spacing=5)
+
+        # ラベルの設定
+        self.numbers_label = Label(text="Random numbers will appear here", font_size=40, size_hint_y=None, height=500)
+        layout.add_widget(self.numbers_label)
+
+        sum_time_layout = BoxLayout(orientation='horizontal', spacing=10)
+
+        self.sum_label = Label(text="Sum will be displayed here", font_size=40, size_hint_y=None, height=50)
+        sum_time_layout.add_widget(self.sum_label)
+
+        self.time_label = Label(text="Time taken: 0.0000 seconds", font_size=20, size_hint_y=None, height=50)
+        sum_time_layout.add_widget(self.time_label)
+
+        layout.add_widget(sum_time_layout)
+
+        # ボタンレイアウト
+        button_layout = BoxLayout(orientation='horizontal', spacing=10)
+        self.generate_button = Button(text="Generate Random Numbers", font_size=20)
+        self.generate_button.bind(on_press=self.start_timer)
+        button_layout.add_widget(self.generate_button)
+
+        self.stop_button = Button(text="Stop Timer", font_size=20)
+        self.stop_button.bind(on_press=self.stop_timer)
+        button_layout.add_widget(self.stop_button)
+
+        layout.add_widget(button_layout)
+
+        self.start_time = None
+        self.end_time = None
+        self.elapsed_time = 0
+        self.running = False
+
+        self.random_numbers = []
+
+        return layout
+
+    def start_timer(self, instance):
+        """ランダムな数値を生成し、タイマーをスタート"""
+        if not self.running:
+            self.start_time = time.time()
+            self.running = True
+            self.reset_time_label()
+            self.random_numbers = self.generate_random_numbers()
+            self.display_sum(self.random_numbers)
+            self.display_numbers(self.random_numbers)
+
+    def stop_timer(self, instance):
+        """タイマーを止め、経過時間を表示"""
+        if self.running:
+            self.end_time = time.time()
+            self.elapsed_time = self.end_time - self.start_time
+            self.time_label.text = f"Time taken: {self.elapsed_time:.4f} seconds"
+            self.running = False
+            self.reset_timer()
+
+    def generate_random_numbers(self):
+        """ランダムな7桁の数字を15個生成"""
+        numbers = list(range(1000000, 10000000))
+        return random.sample(numbers, 15)
+
+    def display_numbers(self, numbers):
+        """生成したランダム数値を表示"""
+        formatted_numbers = [f"{num:,}" for num in numbers]
+        self.numbers_label.text = '\n'.join(formatted_numbers)
+
+    def display_sum(self, numbers):
+        """数値の合計を表示"""
+        total_sum = sum(numbers)
+        formatted_sum = f"{total_sum:,}"
+        self.sum_label.text = f"Sum: {formatted_sum}"
+
+    def reset_time_label(self):
+        """タイムラベルをリセット"""
+        self.time_label.text = "Time taken: 0.0000 seconds"
+
+    def reset_timer(self):
+        """タイマー変数をリセット"""
+        self.start_time = None
+        self.end_time = None
+        self.elapsed_time = 0
+
+if __name__ == '__main__':
+    RandomNumberApp().run()

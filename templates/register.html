@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}新規登録{% endblock %}
+
+{% block content %}
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+    <div class="panel panel-default shadow-lg p-4" style="width: 100%; max-width: 400px;"> {# Bootstrap 3.xのpanelクラスを使用 #}
+        <div class="panel-heading text-center">
+            <h2 class="panel-title">新規登録</h2>
+        </div>
+        <div class="panel-body">
+            {% if error %}
+                <div class="alert alert-danger">{{ error }}</div>
+            {% endif %}
+            <form method="POST" action="{{ url_for('register') }}">
+                <div class="form-group">
+                    <label for="username">ユーザー名</label>
+                    <input type="text" class="form-control" id="username" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">パスワード</label>
+                    <input type="password" class="form-control" id="password" name="password" required>
+                </div>
+                <div class="form-group">
+                    <label for="confirm_password">パスワード（確認）</label>
+                    <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">登録</button>
+            </form>
+            <p class="text-center mt-3">既にアカウントをお持ちですか？ <a href="{{ url_for('login') }}">ログイン</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>従業員一覧</h2>
+        {# 従業員追加ボタン (管理機能として) #}
+        <a href="{{ url_for('user.add_user') }}" class="btn btn-primary">
+            <i class="fas fa-user-plus"></i> 新規従業員追加
+        </a>
+    </div>
+
+    {# ★★★ ここに検索フォームを追加 ★★★ #}
+    <div class="card mb-3">
+        <div class="card-header">従業員検索</div>
+        <div class="card-body">
+            {# 検索フォームはGETメソッドで現在のURLに送信される #}
+            <form class="form-inline" method="GET" action="{{ url_for('user.user_list') }}">
+                {{ search_form.csrf_token }} {# CSRFトークンはGETリクエストでは不要ですが、フォームの慣例として含める場合 #}
+
+                <div class="row align-items-end">
+                    <div class="col-md-8 mb-2">
+                        {{ search_form.search_query.label(class="form-label d-block") }}
+                        {{ search_form.search_query(class="form-control w-100") }} {# placeholderはフォーム定義で設定済み #}
+                    </div>
+                    <div class="col-md-2 mb-2">
+                        {{ search_form.submit(class="btn btn-outline-primary w-100") }}
+                    </div>
+                    {# 検索条件をクリアするボタン #}
+                    <div class="col-md-2 mb-2">
+                        <a href="{{ url_for('user.user_list') }}" class="btn btn-outline-secondary w-100">クリア</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    {# ★★★ 検索フォームの終わり ★★★ #}
+
+
+    {% if users %}
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>ユーザー名</th>
+                    <th>メールアドレス</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user_item in users %} {# 'user' との衝突を避けるため 'user_item' を使用 #}
+                <tr>
+                    <td>{{ user_item.id }}</td>
+                    <td>{{ user_item.username }}</td>
+                    <td>{{ user_item.email }}</td>
+                    <td>
+                        <a href="{{ url_for('user.edit_user', user_id=user_item.id) }}" class="btn btn-sm btn-warning me-2">
+                            <i class="fas fa-edit"></i> 編集
+                        </a>
+                        {# ユーザー削除フォーム (CSRFトークンを忘れずに) #}
+                        <form action="{{ url_for('user.delete_user', user_id=user_item.id) }}" method="POST" style="display:inline;" onsubmit="return confirm('本当にこの従業員を削除しますか？');">
+                            {{ form.csrf_token }} {# Flask-WTFフォームを使用している場合 #}
+                            <button type="submit" class="btn btn-sm btn-danger">
+                                <i class="fas fa-trash-alt"></i> 削除
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p>従業員は登録されていません。検索条件に合う従業員が見つかりませんでした。</p> {# 検索結果がない場合も考慮 #}
+    {% endif %}
+</div>
+{% endblock %}

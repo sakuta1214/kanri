@@ -1,0 +1,124 @@
+{# templates/schedule/schedule_calendar.html #}
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>スケジュールカレンダー</h2>
+        <div>
+            <a href="{{ url_for('schedule.add_schedule') }}" class="btn btn-primary mr-2">
+                <i class="fas fa-plus"></i> スケジュール追加
+            </a>
+            <a href="{{ url_for('schedule.schedule_list') }}" class="btn btn-secondary">
+                <i class="fas fa-list"></i> リスト表示に戻る
+            </a>
+        </div>
+    </div>
+
+    <div id='calendar'></div> {# カレンダーが表示される要素 #}
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }} {# 親テンプレート (base.html) のスクリプトも読み込む場合 #}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var calendarEl = document.getElementById('calendar');
+
+        // ★★★ ここでCSRFトークンをJavaScript変数に格納 ★★★
+        var csrfToken = "{{ csrf_token() }}";
+
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth', // 初期表示: 月表示
+            locale: 'ja', // 日本語化
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek' // 表示タイプ選択ボタン
+            },
+            buttonText: { // ボタンのテキストを日本語化 (locale: 'ja' で多くは自動化されるが、明示的に指定する場合)
+                today: '今日',
+                month: '月',
+                week: '週',
+                day: '日',
+                list: 'リスト'
+            },
+            events: '{{ url_for("schedule.get_events") }}', // ★スケジュールデータを取得するAPIエンドポイント★
+            eventClick: function(info) {
+                // イベントクリック時の処理 (例: スケジュールの詳細表示または編集ページへリダイレクト)
+                if (info.event.id) {
+                    window.location.href = '{{ url_for("schedule.edit_schedule", schedule_id=0) }}'.replace('0', info.event.id);
+                }
+            },
+            // 日付クリック時の処理 (例: その日のスケジュール追加フォームへ遷移)
+            dateClick: function(info) {
+                var clickedDate = info.dateStr; // YYYY-MM-DD 形式
+                window.location.href = '{{ url_for("schedule.add_schedule") }}?date=' + clickedDate;
+            },
+            editable: true, // イベントのドラッグ&ドロップ、リサイズを有効にする (FullCalendarのInteractionプラグインが必要)
+            eventDrop: function(info) { // イベントをドラッグして移動した時の処理
+                var eventId = info.event.id;
+                var newStart = info.event.start.toISOString();
+                var newEnd = info.event.end ? info.event.end.toISOString() : newStart;
+
+                fetch('{{ url_for("schedule.update_event_time") }}', { // 新しいAPIエンドポイント
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrfToken // ★ここを修正: JavaScript変数を使用★
+                    },
+                    body: JSON.stringify({
+                        id: eventId,
+                        start_time: newStart,
+                        end_time: newEnd
+                    })
+                }).then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        console.log('イベント時刻が更新されました');
+                        // flash('イベント時刻が更新されました。', 'success'); // FlaskのflashメッセージをJSで表示するには工夫が必要
+                    } else {
+                        console.error('イベント時刻の更新に失敗しました:', data.message);
+                        info.revert(); // 変更を元に戻す
+                        // flash('イベント時刻の更新に失敗しました。', 'danger');
+                    }
+                }).catch(error => {
+                    console.error('Fetchエラー:', error);
+                    info.revert(); // 変更を元に戻す
+                    // flash('ネットワークエラーが発生しました。', 'danger');
+                });
+            },
+            eventResize: function(info) { // イベントをリサイズした時の処理 (eventDropと同様にデータベースを更新)
+                var eventId = info.event.id;
+                var newStart = info.event.start.toISOString();
+                var newEnd = info.event.end ? info.event.end.toISOString() : newStart;
+
+                fetch('{{ url_for("schedule.update_event_time") }}', { // 新しいAPIエンドポイント
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrfToken // ★ここを修正: JavaScript変数を使用★
+                    },
+                    body: JSON.stringify({
+                        id: eventId,
+                        start_time: newStart,
+                        end_time: newEnd
+                    })
+                }).then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        console.log('イベント時刻が更新されました');
+                    } else {
+                        console.error('イベント時刻の更新に失敗しました:', data.message);
+                        info.revert(); // 変更を元に戻す
+                    }
+                }).catch(error => {
+                    console.error('Fetchエラー:', error);
+                    info.revert(); // 変更を元に戻す
+                });
+            }
+        });
+        calendar.render();
+    });
+</script>
+{% endblock %}

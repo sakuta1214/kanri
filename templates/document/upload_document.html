@@ -1,0 +1,51 @@
+{# templates/document/upload_document.html #}
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>{{ title }}</h2>
+    <form method="POST" enctype="multipart/form-data"> {# ファイルアップロードにはenctypeが必要 #}
+        {{ form.csrf_token }}
+
+        <div class="form-group">
+            <label for="title" class="form-label">タイトル</label>
+            {{ form.title(class="form-control") }}
+            {% if form.title.errors %}
+                <div class="text-danger">
+                    {% for error in form.title.errors %}
+                        <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="description" class="form-label">説明</label>
+            {{ form.description(class="form-control") }}
+            {% if form.description.errors %}
+                <div class="text-danger">
+                    {% for error in form.description.errors %}
+                        <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            {# ★★★ ここを修正: form.document から form.file へ ★★★ #}
+            {{ form.file.label(class="form-label") }}
+            {{ form.file(class="form-control-file") }} {# ファイル入力には 'form-control-file' が適切 #}
+            {% if form.file.errors %}
+                <div class="text-danger">
+                    {% for error in form.file.errors %}
+                        <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        {{ form.submit(class="btn btn-primary mt-3") }}
+        <a href="{{ url_for('document.list_documents') }}" class="btn btn-secondary mt-3">キャンセル</a>
+    </form>
+</div>
+{% endblock %}

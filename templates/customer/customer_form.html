@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>{{ title }}</h2>
+    {# フラッシュメッセージはbase.htmlで一括処理されるため、ここでの個別記述は不要 #}
+
+    <form method="POST">
+        {{ form.csrf_token }} {# CSRFトークンは必須 #}
+
+        <div class="form-group">
+            {{ form.name.label }}
+            {{ form.name(class="form-control") }}
+            {% if form.name.errors %}
+                <div class="alert alert-danger mt-1">
+                    {% for error in form.name.errors %}
+                        <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            {{ form.email.label }}
+            {{ form.email(class="form-control") }}
+            {% if form.email.errors %}
+                <div class="alert alert-danger mt-1">
+                    {% for error in form.email.errors %}
+                        <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            {{ form.phone.label }}
+            {{ form.phone(class="form-control") }}
+            {% if form.phone.errors %}
+                <div class="alert alert-danger mt-1">
+                    {% for error in form.phone.errors %}
+                        <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            {{ form.address.label }}
+            {{ form.address(class="form-control") }}
+            {% if form.address.errors %}
+                <div class="alert alert-danger mt-1">
+                    {% for error in form.address.errors %}
+                        <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            {{ form.company.label }}
+            {{ form.company(class="form-control") }}
+            {% if form.company.errors %}
+                <div class="alert alert-danger mt-1">
+                    {% for error in form.company.errors %}
+                        <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        {{ form.submit(class="btn btn-primary") }}
+        <a href="{{ url_for('customer.customer_list') }}" class="btn btn-default ms-2">キャンセル</a> {# Bootstrap 3.xのbtn-default #}
+    </form>
+</div>
+{% endblock %}

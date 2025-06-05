@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>ドキュメント一覧</h2>
+        <a href="{{ url_for('document.upload_document') }}" class="btn btn-primary">
+            <i class="fas fa-upload"></i> 新規ドキュメントアップロード
+        </a>
+    </div>
+
+    {% if documents %}
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>タイトル</th>
+                    <th>説明</th>
+                    <th>ファイル名</th>
+                    <th>アップロード日時</th> {# このラベルは変更なしでOK #}
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for doc in documents %}
+                <tr>
+                    <td>{{ doc.id }}</td>
+                    <td>{{ doc.title }}</td>
+                    <td>{{ doc.description }}</td>
+                    <td>{{ doc.filename }}</td>
+                    {# ここを修正: doc.uploaded_at から doc.upload_date へ #}
+                    <td>{{ doc.upload_date.strftime('%Y-%m-%d %H:%M') }}</td>
+                    <td>
+                        <a href="{{ url_for('document.edit_document', doc_id=doc.id) }}" class="btn btn-sm btn-warning me-2">
+                            <i class="fas fa-edit"></i> 編集
+                        </a>
+                        {# ここを修正: document_id から doc_id へ #}
+                        <a href="{{ url_for('document.download_document', doc_id=doc.id) }}" class="btn btn-sm btn-info me-2">
+                            <i class="fas fa-download"></i> ダウンロード
+                        </a>
+                        {# ドキュメント削除フォーム (CSRFトークンを忘れずに) #}
+                        {# ここを修正: document_id から doc_id へ #}
+                        <form action="{{ url_for('document.delete_document', doc_id=doc.id) }}" method="POST" style="display:inline;" onsubmit="return confirm('本当にこのドキュメントを削除しますか？');">
+                            {{ form.csrf_token }} {# Flask-WTFフォームを使用している場合 #}
+                            <button type="submit" class="btn btn-sm btn-danger">
+                                <i class="fas fa-trash-alt"></i> 削除
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p>ドキュメントは登録されていません。</p>
+    {% endif %}
+</div>
+{% endblock %}

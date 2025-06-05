@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+{% block title %}ダッシュボード{% endblock %}
+
+{% block content %}
+<div class="container text-center mt-5">
+    <h1>ようこそ, {{ user.username }}さん</h1>
+
+    <div class="row row-cols-1 row-cols-md-3 g-4 mt-4">
+        {# 既存のメニュー項目 #}
+        <div class="col-md-4 col-sm-6 mb-4">
+            <div class="card panel panel-default h-100 shadow-sm">
+                <a href="{{ url_for('employee.employee_list') }}" class="card-body d-flex flex-column justify-content-center align-items-center text-decoration-none text-dark">
+                    <div class="panel-body text-center">
+                        <i class="fas fa-users fa-3x mb-3 text-primary"></i>
+                        <h5 class="card-title">従業員管理</h5>
+                    </div>
+                </a>
+            </div>
+        </div>
+        <div class="col-md-4 col-sm-6 mb-4">
+            <div class="card panel panel-default h-100 shadow-sm">
+                <a href="{{ url_for('customer.customer_list') }}" class="card-body d-flex flex-column justify-content-center align-items-center text-decoration-none text-dark">
+                    <div class="panel-body text-center">
+                        <i class="fas fa-address-book fa-3x mb-3 text-primary"></i>
+                        <h5 class="card-title">顧客管理</h5>
+                    </div>
+                </a>
+            </div>
+        </div>
+        <div class="col-md-4 col-sm-6 mb-4">
+            <div class="card panel panel-default h-100 shadow-sm">
+                <a href="{{ url_for('product.product_list') }}" class="card-body d-flex flex-column justify-content-center align-items-center text-decoration-none text-dark">
+                    <div class="panel-body text-center">
+                        <i class="fas fa-boxes fa-3x mb-3 text-primary"></i>
+                        <h5 class="card-title">在庫管理</h5>
+                    </div>
+                </a>
+            </div>
+        </div>
+        <div class="col-md-4 col-sm-6 mb-4">
+            <div class="card panel panel-default h-100 shadow-sm">
+                <a href="{{ url_for('task.task_list') }}" class="card-body d-flex flex-column justify-content-center align-items-center text-decoration-none text-dark">
+                    <div class="panel-body text-center">
+                        <i class="fas fa-tasks fa-3x mb-3 text-primary"></i>
+                        <h5 class="card-title">タスク管理</h5>
+                    </div>
+                </a>
+            </div>
+        </div>
+        <div class="col-md-4 col-sm-6 mb-4">
+            <div class="card panel panel-default h-100 shadow-sm">
+                <a href="{{ url_for('schedule.schedule_list') }}" class="card-body d-flex flex-column justify-content-center align-items-center text-decoration-none text-dark">
+                    <div class="panel-body text-center">
+                        <i class="fas fa-calendar-alt fa-3x mb-3 text-primary"></i>
+                        <h5 class="card-title">スケジュール管理</h5>
+                    </div>
+                </a>
+            </div>
+        </div>
+        <div class="col-md-4 col-sm-6 mb-4">
+            <div class="card panel panel-default h-100 shadow-sm">
+                <a href="{{ url_for('accounting.transaction_list') }}" class="card-body d-flex flex-column justify-content-center align-items-center text-decoration-none text-dark">
+                    <div class="panel-body text-center">
+                        <i class="fas fa-chart-pie fa-3x mb-3 text-primary"></i>
+                        <h5 class="card-title">会計・経理管理</h5>
+                    </div>
+                </a>
+            </div>
+        </div>
+        <div class="col-md-4 col-sm-6 mb-4">
+            <div class="card panel panel-default h-100 shadow-sm">
+                <a href="{{ url_for('project.project_list') }}" class="card-body d-flex flex-column justify-content-center align-items-center text-decoration-none text-dark">
+                    <div class="panel-body text-center">
+                        <i class="fas fa-project-diagram fa-3x mb-3 text-primary"></i>
+                        <h5 class="card-title">プロジェクト管理</h5>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        {# ★ 追加: アクセス・権限管理 (管理者のみ表示) #}
+        {% if user.role == '管理者' %}
+        <div class="col-md-4 col-sm-6 mb-4">
+            <div class="card panel panel-default h-100 shadow-sm">
+                <a href="{{ url_for('auth.user_list') }}" class="card-body d-flex flex-column justify-content-center align-items-center text-decoration-none text-dark">
+                    <div class="panel-body text-center">
+                        <i class="fas fa-user-lock fa-3x mb-3 text-primary"></i>
+                        <h5 class="card-title">アクセス・権限管理</h5>
+                    </div>
+                </a>
+            </div>
+        </div>
+        {% endif %}
+
+        {# 他のメニュー項目は変更なし #}
+        <div class="col-md-4 col-sm-6 mb-4">
+            <div class="card panel panel-default h-100 shadow-sm">
+                <a href="{{url_for('document.list_documents')}}" class="card-body d-flex flex-column justify-content-center align-items-center text-decoration-none text-dark">
+                    <div class="panel-body text-center">
+                        <i class="fas fa-file-alt fa-3x mb-3 text-primary"></i>
+                        <h5 class="card-title">ドキュメント管理</h5>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-5">
+        <a href="{{ url_for('auth.logout') }}" class="btn btn-outline-secondary">ログアウト</a>
+    </div>
+</div>
+{% endblock %}
